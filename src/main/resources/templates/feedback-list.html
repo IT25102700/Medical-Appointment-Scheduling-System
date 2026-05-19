@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Feedback List')} ">
+</head>
+<body class="bg-[var(--bg)] text-[var(--secondary)] font-['Outfit']">
+    <div th:replace="~{fragments/navbar :: navbar} "></div>
+    <div class="flex min-h-screen">
+        <div th:replace="~{fragments/sidebar :: sidebar} "></div>
+        <main class="flex-1 p-8">
+            <h1 class="text-2xl font-bold text-[var(--primary)] mb-6">Patient Feedbacks</h1>
+            
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="p-4 font-semibold">Patient</th>
+                            <th class="p-4 font-semibold">Doctor</th>
+                            <th class="p-4 font-semibold">Rating</th>
+                            <th class="p-4 font-semibold">Comment</th>
+                            <th class="p-4 font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="feedback : " class="border-b hover:bg-gray-50">
+                            <td class="p-4" th:text=""></td>
+                            <td class="p-4" th:text=""></td>
+                            <td class="p-4" th:text=" + ' / 5'"></td>
+                            <td class="p-4" th:text=""></td>
+                            <td class="p-4">
+                                <form th:action="@{/admin/feedbacks/delete}" method="post" class="inline">
+                                    <input type="hidden" name="feedbackId" th:value="" />
+                                    <button type="submit" class="text-[var(--danger)] hover:underline">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="">
+                            <td colspan="5" class="p-4 text-center text-gray-500">No feedback available.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <div th:replace="~{fragments/footer :: footer} "></div>
+</body>
+</html>
