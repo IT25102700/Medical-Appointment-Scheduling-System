@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Payment Tracking – MediQueue')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: admin-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <h1>Payment Tracking</h1>
+        </div>
+        <div class="panel-body">
+            <div class="table-card">
+                <h3>All Transactions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pay : ${payments}">
+                            <td>
+                                <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}">
+                                    <span th:each="u : ${users}" th:if="${u.userId == appt.patientId}" th:text="${u.fullName}">Patient</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}">
+                                    <span th:each="d : ${doctors}" th:if="${d.doctorId == appt.doctorId}" th:text="'Dr. ' + ${d.fullName}">Doctor</span>
+                                </span>
+                            </td>
+                            <td style="font-weight:600;">Rs. <span th:text="${pay.amount}">0</span></td>
+                            <td th:text="${pay.method}">Card</td>
+                            <td><span th:text="${pay.state}" class="status-badge status-completed" style="background:#f0fdf4; color:#16a34a;">PAID</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(payments)}">
+                            <td colspan="5" style="text-align:center; padding:30px;">No payments recorded.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>
