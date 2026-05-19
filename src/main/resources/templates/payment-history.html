@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Payment History – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="panel-container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
+    <div class="table-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 24px;">Payment History</h2>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                    <th style="padding: 12px;">Doctor</th>
+                    <th style="padding: 12px;">Appointment Date</th>
+                    <th style="padding: 12px;">Amount</th>
+                    <th style="padding: 12px;">Method</th>
+                    <th style="padding: 12px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pay : ${payments}" style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 12px;">
+                        <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}">
+                            <span th:each="doc : ${doctors}" th:if="${doc.doctorId == appt.doctorId}" th:text="'Dr. ' + ${doc.fullName}">Doctor</span>
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}" 
+                              th:text="${#temporals.format(appt.appointmentTime, 'dd MMM yyyy')}">Date</span>
+                    </td>
+                    <td style="padding: 12px; font-weight: 600;">Rs. <span th:text="${pay.amount}">0</span></td>
+                    <td style="padding: 12px;" th:text="${pay.method}">Card</td>
+                    <td style="padding: 12px;">
+                        <span th:text="${pay.state}" class="status-badge status-completed" style="background:#f0fdf4; color:#16a34a;">PAID</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(payments)}">
+                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-secondary);">No payment history found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

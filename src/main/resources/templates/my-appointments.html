@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('My Appointments – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-layout">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 class="page-title" style="margin:0;">My appointments</h2>
+        <a th:href="@{/patient/payments}" class="btn btn-outline btn-sm">Payment History</a>
+    </div>
+
+    <div th:if="${appointments == null or #lists.isEmpty(appointments)}" style="text-align: center; padding: 2rem;">
+        <p>You have no appointments scheduled.</p>
+        <a th:href="@{/doctors}" class="btn btn-primary" style="margin-top: 1rem;">Book one now</a>
+    </div>
+
+    <div th:each="appt : ${appointments}" class="appt-card">
+        <div class="doc-photo">👨‍⚕️</div>
+        <div class="appt-detail">
+            <h4 th:each="doc : ${doctors}" th:if="${doc.doctorId == appt.doctorId}" th:text="'Dr. ' + ${doc.fullName}">Doctor Name</h4>
+            <h4 th:unless="${#lists.toList(doctors).?[doctorId == '__${appt.doctorId}__'].size() > 0}" th:text="${appt.doctorId}">Doctor ID</h4>
+
+            <p th:text="${appt.notes}">Notes</p>
+            <p th:text="${'Date & Time: ' + (appt.appointmentTime != null ? #temporals.format(appt.appointmentTime, 'dd MMM yyyy | HH:mm') : 'N/A')}">Date & Time</p>
+            <p>Status: <span th:text="${appt.status}" th:class="'status-badge status-' + ${#strings.toLowerCase(appt.status)}">Status</span></p>
+            
+            <!-- Payment Info -->
+            <div th:each="pay : ${payments}" th:if="${pay.appointmentId == appt.appointmentId}" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);">
+                <span>Payment: <strong>Rs. <span th:text="${pay.amount}">0</span></strong></span>
+                <span th:text="${pay.state}" style="margin-left:8px;font-weight:600;color:var(--success);">PAID</span>
+            </div>
+        </div>
+        <div class="appt-actions">
+            <div th:if="${appt.status.name() == 'BOOKED'}" style="display: flex; gap: 10px;">
+                <form th:action="@{/patient/cancel}" method="post" style="display:inline;">
+                    <input type="hidden" name="appointmentId" th:value="${appt.appointmentId}"/>
+                    <button type="submit" class="btn btn-danger btn-sm">Cancel appointment</button>
+                </form>
+                <a th:href="@{/patient/reschedule(appointmentId=${appt.appointmentId})}" class="btn btn-outline btn-sm" style="text-decoration:none;">Reschedule</a>
+            </div>
+            
+            <div th:if="${appt.status.name() == 'COMPLETED'}" style="width:100%;">
+                <span class="status-badge status-completed">Completed</span>
+                <a th:href="@{/patient/feedback(appointmentId=${appt.appointmentId}, doctorId=${appt.doctorId})}" 
+                   class="btn btn-outline btn-sm" style="margin-top:8px; display: inline-block; text-decoration: none;">
+                    Give Feedback
+                </a>
+            </div>
+
+            <span th:if="${appt.status.name() == 'CANCELLED'}" class="status-badge status-cancelled">Cancelled</span>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
