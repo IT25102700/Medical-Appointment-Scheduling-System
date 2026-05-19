@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Login – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2>Login</h2>
+        <p>Please log in to book appointment</p>
+
+        <!-- Alert Fragment or simple check -->
+        <div th:if="${error}" class="alert alert-danger" style="color: var(--danger); margin-bottom: 1rem;" th:text="${error}"></div>
+        <div th:if="${message}" class="alert alert-success" style="color: var(--success); margin-bottom: 1rem;" th:text="${message}"></div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Username" required/>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="pass" name="password" placeholder="Password" required/>
+                    <span class="toggle-password" id="toggle-pass" onclick="togglePassword('pass', 'toggle-pass')">🔒</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Login</button>
+        </form>
+        <p class="auth-link">Create a new account? <a th:href="@{/register}">Click here</a></p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
