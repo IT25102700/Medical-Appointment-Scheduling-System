@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Reschedule Appointment – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="panel-container" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <div class="table-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 20px;">Reschedule Appointment</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">
+            Current time: <strong th:text="${#temporals.format(appointment.appointmentTime, 'dd MMM yyyy, HH:mm')}">Time</strong>
+        </p>
+
+        <form th:action="@{/patient/reschedule}" method="post">
+            <input type="hidden" name="appointmentId" th:value="${appointment.appointmentId}"/>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Select New Date</label>
+                <input type="date" name="date" class="form-control" required/>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Select New Time</label>
+                <select name="time" class="form-control" required>
+                    <option value="09:00 AM">09:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="01:00 PM">01:00 PM</option>
+                    <option value="02:00 PM">02:00 PM</option>
+                    <option value="03:00 PM">03:00 PM</option>
+                    <option value="04:00 PM">04:00 PM</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 30px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">Confirm Reschedule</button>
+                <a th:href="@{/patient/dashboard}" class="btn" style="background: #eee; color: #333; text-decoration: none; padding: 10px 20px; border-radius: 50px;">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

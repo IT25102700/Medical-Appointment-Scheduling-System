@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Checkout – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width:500px; width:100%;">
+        <h2 style="margin-bottom:24px;">Complete Payment</h2>
+        
+        <div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:24px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="color:var(--text-secondary);">Doctor Fee</span>
+                <span style="font-weight:700;">Rs. <span th:text="${fee}">500</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="color:var(--text-secondary);">Service Tax</span>
+                <span style="font-weight:700;">Rs. 2.00</span>
+            </div>
+            <hr style="border:0; border-top:1px solid var(--border); margin:12px 0;"/>
+            <div style="display:flex; justify-content:space-between; font-size:1.1rem;">
+                <span style="font-weight:700;">Total Amount</span>
+                <span style="font-weight:700; color:var(--primary);">Rs. <span th:text="${fee + 2}">502</span></span>
+            </div>
+        </div>
+
+        <form th:action="@{/patient/pay}" method="post">
+            <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>
+            <input type="hidden" name="amount" th:value="${fee}"/>
+            
+            <div class="form-group">
+                <label>Select Payment Method</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
+                        <input type="radio" name="method" value="STRIPE" checked/>
+                        Stripe
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
+                        <input type="radio" name="method" value="RAZORPAY"/>
+                        Razorpay
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:24px; padding:14px;">Pay Now & Confirm Appointment</button>
+        </form>
+        
+        <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-top:16px;">
+            Your payment is secure and encrypted.
+        </p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

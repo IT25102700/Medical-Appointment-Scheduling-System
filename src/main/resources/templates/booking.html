@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Book Appointment – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="appt-layout">
+    <div>
+        <div class="appt-photo">
+            <img th:if="${doctor != null and doctor.profileImage != null and doctor.profileImage != ''}" th:src="${doctor.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"/>
+            <span th:unless="${doctor != null and doctor.profileImage != null and doctor.profileImage != ''}">👨‍⚕️</span>
+        </div>
+    </div>
+    <div class="doctor-meta">
+        <h2 th:text="${doctor != null ? 'Dr. ' + doctor.fullName : 'Dr. Richard James'}">Dr. Richard James <span class="badge badge-primary" style="font-size:0.7rem; vertical-align:middle;">✓ Verified</span></h2>
+        <div class="degree">
+            <span th:text="${doctor != null ? doctor.degree : 'MBBS'}">MBBS</span> - 
+            <span th:text="${doctor != null ? doctor.specialization : 'General physician'}">General physician</span>
+            <span class="badge badge-outline" th:text="${doctor != null ? doctor.experience : '1 Year'}">1 Year</span>
+        </div>
+        <div class="info-box">
+            <h4>About ℹ</h4>
+            <p th:text="${doctor != null and doctor.about != null and doctor.about != '' ? doctor.about : 'Our doctors have a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.'}"></p>
+        </div>
+        <p class="fee-text">Appointment fee: <span th:text="${doctor != null ? 'Rs.' + doctor.appointmentFee : 'Rs.50'}">Rs.50</span> <span>| per visit</span></p>
+    </div>
+</div>
+
+<div class="slots-section">
+    <h3>Book Appointment</h3>
+    <form th:action="@{/patient/book}" method="post">
+        <input type="hidden" name="doctorId" th:value="${doctor != null ? doctor.doctorId : ''}"/>
+        <input type="hidden" name="patientId" th:value="${#authentication.name}"/>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Select Date</label>
+            <input type="date" id="booking-date" name="date" class="form-control" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);" required/>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Available Time Slots</label>
+            <div class="times-row" id="time-slots-container">
+                <div th:if="${doctor != null and doctor.availableSlots != null and doctor.availableSlots != ''}" th:each="slot : ${#strings.arraySplit(doctor.availableSlots, ',')}" class="time-chip" th:text="${slot}" th:attr="onclick='selectSlot(this, \'' + ${slot} + '\')'">
+                    09:00 AM
+                </div>
+                <div th:unless="${doctor != null and doctor.availableSlots != null and doctor.availableSlots != ''}" style="color:var(--text-secondary); font-size:0.9rem;">
+                    No specific slots available. Please enter time manually or contact the clinic.
+                </div>
+            </div>
+            <input type="hidden" id="selected-slot" name="time" required/>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Notes (Optional)</label>
+            <textarea name="notes" class="form-control" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);" placeholder="Add any notes for the doctor..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="book-btn">Confirm Booking</button>
+    </form>
+</div>
+
+<script>
+    function selectSlot(el, slot) {
+        document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('selected-slot').value = slot;
+    }
+
+    // Set min date to today
+    document.getElementById('booking-date').min = new String(new Date().toISOString().split('T')[0]);
+</script>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
