@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Notifications – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="panel-container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <div class="table-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 24px;">Notifications</h2>
+        
+        <div th:if="${notifications == null or #lists.isEmpty(notifications)}" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <p>You have no notifications at this time.</p>
+        </div>
+
+        <div th:each="n : ${notifications}" class="notification-item" 
+             th:style="'padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;' + (${n.isRead} ? 'opacity: 0.7;' : 'background: var(--primary-light); border-left: 4px solid var(--primary);')">
+            <div>
+                <p th:text="${n.message}" style="margin: 0; font-weight: 500;"></p>
+                <small th:text="${#temporals.format(n.timestamp, 'dd MMM yyyy, HH:mm')}" style="color: var(--text-secondary);"></small>
+            </div>
+            <form th:if="${!n.isRead}" th:action="@{/notifications/read}" method="post">
+                <input type="hidden" name="notificationId" th:value="${n.notificationId}"/>
+                <button type="submit" class="btn btn-outline btn-sm" style="font-size: 0.7rem;">Mark as read</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
