@@ -1,0 +1,3 @@
+bef68fd2-2717-4c9f-ae68-1d634e72ae78,U-PT,Your appointment status has been updated to: COMPLETED,2026-05-16T09:58:40.277536,true
+f1d5cfd1-59d2-4c88-8014-c5d1a6c3cd88,U-PT,Your appointment status has been updated to: COMPLETED,2026-05-16T10:00:41.258752,true
+eb5087a2-1309-4373-a742-f9e8a31c2deb,U-de274255-a477-4072-8c17-c4d1d7b03464,New feedback received! Rating: 5 stars.,2026-05-16T16:27:22.964452400,false
