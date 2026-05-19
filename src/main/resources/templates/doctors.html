@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('All Doctors – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div style="display:flex;padding:32px 6%;gap:32px;">
+    <!-- Sidebar filter -->
+    <div style="width:220px;flex-shrink:0;">
+        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;">Browse through the doctors specialist.</p>
+        <div class="sidebar-filter">
+            <a th:href="@{/doctors}" 
+               th:class="${selectedSpecialty == null or selectedSpecialty == '' ? 'filter-item active' : 'filter-item'}">All Doctors</a>
+            <a th:href="@{/doctors(specialty='General physician')}" 
+               th:class="${selectedSpecialty == 'General physician' ? 'filter-item active' : 'filter-item'}">General physician</a>
+            <a th:href="@{/doctors(specialty='Gynecologist')}" 
+               th:class="${selectedSpecialty == 'Gynecologist' ? 'filter-item active' : 'filter-item'}">Gynecologist</a>
+            <a th:href="@{/doctors(specialty='Dermatologist')}" 
+               th:class="${selectedSpecialty == 'Dermatologist' ? 'filter-item active' : 'filter-item'}">Dermatologist</a>
+            <a th:href="@{/doctors(specialty='Pediatrician')}" 
+               th:class="${selectedSpecialty == 'Pediatrician' ? 'filter-item active' : 'filter-item'}">Pediatricians</a>
+            <a th:href="@{/doctors(specialty='Neurologist')}" 
+               th:class="${selectedSpecialty == 'Neurologist' ? 'filter-item active' : 'filter-item'}">Neurologist</a>
+            <a th:href="@{/doctors(specialty='Gastroenterologist')}" 
+               th:class="${selectedSpecialty == 'Gastroenterologist' ? 'filter-item active' : 'filter-item'}">Gastroenterologist</a>
+            <a th:href="@{/doctors(specialty='Cardiologist')}" 
+               th:class="${selectedSpecialty == 'Cardiologist' ? 'filter-item active' : 'filter-item'}">Cardiologist</a>
+            <a th:href="@{/doctors(specialty='Psychiatrist')}" 
+               th:class="${selectedSpecialty == 'Psychiatrist' ? 'filter-item active' : 'filter-item'}">Psychiatrist</a>
+        </div>
+
+    </div>
+
+    <!-- Doctors grid -->
+    <div style="flex:1;">
+        <div th:if="${doctors == null or #lists.isEmpty(doctors)}" style="text-align: center; padding: 3rem; background: var(--bg); border-radius: 12px; border: 1px solid var(--border);">
+            <p style="color: var(--text-secondary);">No doctors found in this specialty yet.</p>
+            <a th:href="@{/doctors}" style="color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; margin-top: 8px; display: inline-block;">View all doctors</a>
+        </div>
+        
+        <div class="doctors-grid">
+            <a th:each="doc : ${doctors}" th:href="@{/patient/book(doctorId=${doc.doctorId})}" class="doctor-card">
+                <div class="doctor-img">
+                    <img th:if="${doc.profileImage != null and doc.profileImage != ''}" th:src="${doc.profileImage}" style="width:100%;height:100%;object-fit:cover;"/>
+                    <span th:unless="${doc.profileImage != null and doc.profileImage != ''}">👨‍⚕️</span>
+                </div>
+                <div class="doctor-info">
+                    <div class="availability"><span class="dot"></span> Available</div>
+                    <div class="doctor-name" th:text="${doc.fullName}">Dr. Richard James</div>
+                    <div style="font-size: 0.8rem; color: #f59e0b; margin-bottom: 4px;">
+                        ★ <span th:text="${#numbers.formatDecimal(ratings.get(doc.doctorId), 1, 1)}">5.0</span>
+                    </div>
+                    <div class="doctor-specialty" th:text="${doc.specialization}">General physician</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .sidebar-filter { display: flex; flex-direction: column; }
+    .filter-item { 
+        padding: 10px 16px; border: 1px solid var(--border); border-bottom: none; 
+        text-decoration: none; color: var(--text); font-size: 0.875rem; transition: all 0.2s;
+    }
+    .filter-item:first-child { border-radius: 8px 8px 0 0; }
+    .filter-item:last-child { border-radius: 0 0 8px 8px; border-bottom: 1px solid var(--border); }
+    .filter-item:hover { background: var(--bg); color: var(--primary); }
+    .filter-item.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); font-weight: 600; position: relative; z-index: 1; border-bottom: 1px solid var(--primary); }
+</style>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
