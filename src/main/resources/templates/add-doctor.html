@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Add Doctor – Admin')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: admin-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <h1>Add Doctor</h1>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
+        <div class="panel-body">
+            <div class="form-section">
+                <h2>Add New Doctor</h2>
+                <div th:if="${message}" class="alert alert-success" style="color: var(--success); margin-bottom: 1rem;" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" style="color: var(--danger); margin-bottom: 1rem;" th:text="${error}"></div>
+                
+                <form th:action="@{/admin/doctors/add}" method="post" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Username</label><input type="text" name="username" placeholder="Username" required/></div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="doc-pass" name="password" placeholder="Password" required/>
+                                <span class="toggle-password" id="toggle-doc-pass" onclick="togglePassword('doc-pass', 'toggle-doc-pass')">🔒</span>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Full Name</label><input type="text" name="fullName" placeholder="Dr. Name" required/></div>
+                        <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="Email" required/></div>
+                        <div class="form-group"><label>Phone</label><input type="tel" name="phone" placeholder="Phone" required/></div>
+                        <div class="form-group">
+                            <label>Speciality</label>
+                            <select name="specialization" required>
+                                <option value="General physician">General physician</option>
+                                <option value="Gynecologist">Gynecologist</option>
+                                <option value="Dermatologist">Dermatologist</option>
+                                <option value="Pediatrician">Pediatrician</option>
+                                <option value="Neurologist">Neurologist</option>
+                                <option value="Gastroenterologist">Gastroenterologist</option>
+                                <option value="Cardiologist">Cardiologist</option>
+                                <option value="Ophthalmologist">Ophthalmologist</option>
+                                <option value="Orthopedic">Orthopedic</option>
+                                <option value="Psychiatrist">Psychiatrist</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group"><label>Degree</label><input type="text" name="degree" placeholder="MBBS, MD" required/></div>
+                        <div class="form-group">
+                            <label>Experience</label>
+                            <select name="experience" required>
+                                <option value="1 Year">1 Year</option>
+                                <option value="2 Years">2 Years</option>
+                                <option value="3 Years">3 Years</option>
+                                <option value="4 Years">4 Years</option>
+                                <option value="5+ Years">5+ Years</option>
+                                <option value="10+ Years">10+ Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Appointment Fee (Rs.)</label><input type="number" name="appointmentFee" placeholder="500" required/></div>
+                        <div class="form-group"><label>License Number</label><input type="text" name="licenseNumber" placeholder="LIC-123" required/></div>
+                        <div class="form-group"><label>Profile Image</label><input type="file" name="profileImageFile" accept="image/*"/></div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:16px;">
+                        <label>About Doctor</label>
+                        <textarea name="about" placeholder="Write a short description about the doctor..." style="min-height:100px;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-top:16px;">
+                        <label>Available Time Slots (e.g., 09:00 AM, 10:00 AM)</label>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;">
+                            <select id="slot-presets" class="form-control" style="width:auto;display:inline-block;">
+                                <option value="">Select a time...</option>
+                                <option value="08:00 AM">08:00 AM</option>
+                                <option value="09:00 AM">09:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="02:00 PM">02:00 PM</option>
+                                <option value="03:00 PM">03:00 PM</option>
+                                <option value="04:00 PM">04:00 PM</option>
+                                <option value="05:00 PM">05:00 PM</option>
+                                <option value="06:00 PM">06:00 PM</option>
+                            </select>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addSlot()">Add Slot</button>
+                        </div>
+                        <input type="text" id="availableSlots" name="availableSlots" placeholder="Selected slots will appear here" readonly style="background:#f3f4f6;"/>
+                        <button type="button" class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="document.getElementById('availableSlots').value=''">Clear Slots</button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top: 24px;width:100%;">Add doctor</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addSlot() {
+        const select = document.getElementById('slot-presets');
+        const input = document.getElementById('availableSlots');
+        const val = select.value;
+        if (!val) return;
+        
+        let current = input.value ? input.value.split(',') : [];
+        if (!current.includes(val)) {
+            current.push(val);
+            current.sort();
+            input.value = current.join(',');
+        }
+    }
+</script>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>
