@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.project.service;
 
 import com.project.model.Payment;
 import com.project.model.PaymentState;
