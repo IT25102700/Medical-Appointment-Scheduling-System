@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.projects.service;
 
 import com.project.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

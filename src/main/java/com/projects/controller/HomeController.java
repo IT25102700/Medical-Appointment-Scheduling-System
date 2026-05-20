@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.controller;
+package com.projects.controller;
 
 import com.project.service.DoctorService;
 import com.project.service.FeedbackService;

@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.projects.service;
 
 import com.project.model.Role;
 import com.project.repository.AdminRepository;

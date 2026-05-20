@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.controller;
+package com.projects.controller;
 
 import com.project.model.Role;
 import com.project.service.UserService;
