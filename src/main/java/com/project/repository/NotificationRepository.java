@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.repository;
+package com.project.repository;
 
 import com.project.model.Notification;
 import com.project.util.FileStorageManager;
@@ -22,12 +22,12 @@ public class NotificationRepository extends BaseFileRepository<Notification> {
 
     @Override
     protected String mapToLine(Notification n) {
-        return String.join(",", 
-            n.getNotificationId(), 
-            n.getUserId(), 
-            n.getMessage(), 
-            n.getTimestamp().toString(), 
-            String.valueOf(n.isRead())
+        return String.join(",",
+                n.getNotificationId(),
+                n.getUserId(),
+                n.getMessage(),
+                n.getTimestamp().toString(),
+                String.valueOf(n.isRead())
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.project.service;
 
 import com.project.model.Notification;
 import com.project.repository.NotificationRepository;

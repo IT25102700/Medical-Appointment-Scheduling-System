@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.project.service;
 
 import com.project.model.Feedback;
 import com.project.repository.FeedbackRepository;
@@ -23,6 +23,11 @@ public class FeedbackService {
         Feedback f = new Feedback(UUID.randomUUID().toString(), patientId, doctorId, rating, experience, comment, LocalDateTime.now());
         repository.append(f);
         notificationService.send(doctorId, "New feedback received! Rating: " + rating + " stars.");
+    }
+
+    public void submitGeneralReview(String patientName, int rating, String comment) {
+        Feedback f = new Feedback(UUID.randomUUID().toString(), patientName, "SYSTEM", rating, "General Platform Review", comment.replace(",", " "), LocalDateTime.now());
+        repository.append(f);
     }
 
     public List<Feedback> all() {
