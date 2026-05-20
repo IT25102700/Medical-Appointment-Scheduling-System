@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Doctor Dashboard – MediQueue')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: doctor-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <h1>Dashboard</h1>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
+        <div class="panel-body">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info"><p>Total Appointments</p><h3 th:text="${#lists.size(appointments)}">0</h3></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info"><p>Total Schedules</p><h3 th:text="${#lists.size(schedules)}">0</h3></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-info"><p>Patient Records</p><h3 th:text="${#lists.size(records)}">0</h3></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info"><p>Total Earnings</p><h3>Rs. <span th:text="${earnings}">0</span></h3></div>
+                </div>
+            </div>
+            <div class="table-card">
+                <h3>Latest Bookings</h3>
+                <table>
+                    <thead><tr><th>#</th><th>Patient</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr th:each="appt, iter : ${appointments}">
+                            <td th:text="${iter.count}">1</td>
+                             <td>
+                                 <span th:each="p : ${patients}" th:if="${p.userId == appt.patientId}" th:text="${p.fullName}">Patient Name</span>
+                                 <span th:unless="${#lists.toList(patients).?[userId == '__${appt.patientId}__'].size() > 0}" th:text="${appt.patientId}">ID</span>
+                             </td>
+
+                            <td><span th:text="${appt.status}" th:class="'status-badge status-' + ${#strings.toLowerCase(appt.status)}">Status</span></td>
+                            <td th:text="${appt.notes}">Notes</td>
+                            <td>
+                                <div th:if="${appt.status.name() == 'BOOKED'}" style="display:flex; gap:8px;">
+                                    <form th:action="@{/doctor/appointments/complete}" method="post">
+                                        <input type="hidden" name="appointmentId" th:value="${appt.appointmentId}"/>
+                                        <button type="submit" class="btn btn-success btn-sm" style="padding: 4px 10px;">
+                                            <span style="font-size: 0.8rem;">✓</span>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/doctor/appointments/cancel}" method="post">
+                                        <input type="hidden" name="appointmentId" th:value="${appt.appointmentId}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 10px;">
+                                            <span style="font-size: 0.8rem;">✕</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>
