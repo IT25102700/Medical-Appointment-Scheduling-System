@@ -46,4 +46,10 @@ public class DoctorRepository extends BaseFileRepository<Doctor> {
         doctors.add(doctor);
         saveAll(doctors);
     }
+
+    public void delete(String doctorId) {
+        List<Doctor> doctors = findAll();
+        doctors.removeIf(d -> d.getDoctorId().equals(doctorId) || d.getUserId().equals(doctorId));
+        saveAll(doctors);
+    }
 }

@@ -1,3 +1,2 @@
-U-DR,doctor1,Dr. Brown,doctor@hospital.local,9000000001,Cardiology,LIC-2026-11,,0.0,,,,
 U-e9a7111b-3eae-4a26-8e77-0acf596423ed,doctor2,Dr. Sritharan,sritharn@mail.com,0775689863,mbbs,64327875,,0.0,,,,
-U-de274255-a477-4072-8c17-c4d1d7b03464,Kevin_medic,Kevin Martell,kevin@gmail.com,077000000,Pediatrician,000011,/uploads/1778873994023_linkedin-sales-solutions-pAtA8xe_iVM-unsplash.jpg,100.0,1 Year,Mbbs,,09:00 AM, 10:00 AM
+U-de274255-a477-4072-8c17-c4d1d7b03464,Kevin_medic,Kevin Martell,kevin@gmail.com,077000000,Pediatrician,000011,/uploads/1778873994023_linkedin-sales-solutions-pAtA8xe_iVM-unsplash.jpg,100.0,1 Year,Mbbs,,09:00 AM
