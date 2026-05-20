@@ -14,7 +14,7 @@
     <div class="doctor-meta">
         <h2 th:text="${doctor != null ? 'Dr. ' + doctor.fullName : 'Dr. Richard James'}">Dr. Richard James <span class="badge badge-primary" style="font-size:0.7rem; vertical-align:middle;">✓ Verified</span></h2>
         <div class="degree">
-            <span th:text="${doctor != null ? doctor.degree : 'MBBS'}">MBBS</span> - 
+            <span th:text="${doctor != null ? doctor.degree : 'MBBS'}">MBBS</span> -
             <span th:text="${doctor != null ? doctor.specialization : 'General physician'}">General physician</span>
             <span class="badge badge-outline" th:text="${doctor != null ? doctor.experience : '1 Year'}">1 Year</span>
         </div>
@@ -31,7 +31,7 @@
     <form th:action="@{/patient/book}" method="post">
         <input type="hidden" name="doctorId" th:value="${doctor != null ? doctor.doctorId : ''}"/>
         <input type="hidden" name="patientId" th:value="${#authentication.name}"/>
-        
+
         <div class="form-group" style="margin-bottom: 1.5rem;">
             <label>Select Date</label>
             <input type="date" id="booking-date" name="date" class="form-control" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);" required/>
@@ -49,12 +49,12 @@
             </div>
             <input type="hidden" id="selected-slot" name="time" required/>
         </div>
-        
+
         <div class="form-group" style="margin-bottom: 1.5rem;">
             <label>Notes (Optional)</label>
             <textarea name="notes" class="form-control" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);" placeholder="Add any notes for the doctor..."></textarea>
         </div>
-        
+
         <button type="submit" class="btn btn-primary" id="book-btn">Confirm Booking</button>
     </form>
 </div>

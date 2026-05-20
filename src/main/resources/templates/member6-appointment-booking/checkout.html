@@ -7,7 +7,7 @@
 <div class="auth-wrapper">
     <div class="auth-card" style="max-width:500px; width:100%;">
         <h2 style="margin-bottom:24px;">Complete Payment</h2>
-        
+
         <div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:24px; border:1px solid var(--border);">
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                 <span style="color:var(--text-secondary);">Doctor Fee</span>
@@ -27,10 +27,10 @@
         <form th:action="@{/patient/pay}" method="post">
             <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>
             <input type="hidden" name="amount" th:value="${fee}"/>
-            
+
             <div class="form-group">
                 <label>Select Payment Method</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:8px;">
                     <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
                         <input type="radio" name="method" value="STRIPE" checked/>
                         Stripe
@@ -39,12 +39,89 @@
                         <input type="radio" name="method" value="RAZORPAY"/>
                         Razorpay
                     </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid var(--border); border-radius:8px; cursor:pointer;">
+                        <input type="radio" name="method" value="CARD"/>
+                        Credit Card
+                    </label>
+                </div>
+            </div>
+
+            <div id="card-fields" style="display:none; margin-top:20px; border:1px dashed var(--border); padding:16px; border-radius:8px; background:var(--bg);">
+                <h4 style="margin-bottom:12px; font-size:0.9rem; font-weight:700;">Card Details</h4>
+                <div class="form-group">
+                    <label>Cardholder Name</label>
+                    <input type="text" id="cardName" placeholder="John Doe"/>
+                </div>
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 1234 5678" maxlength="19"/>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5"/>
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="password" id="cardCvv" placeholder="123" maxlength="3"/>
+                    </div>
                 </div>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width:100%; margin-top:24px; padding:14px;">Pay Now & Confirm Appointment</button>
         </form>
-        
+
+        <script>
+            function toggleCardFields(show) {
+                const fields = document.getElementById('card-fields');
+                const inputs = fields.querySelectorAll('input');
+                if (show) {
+                    fields.style.display = 'block';
+                    inputs.forEach(input => input.setAttribute('required', 'true'));
+                } else {
+                    fields.style.display = 'none';
+                    inputs.forEach(input => {
+                        input.removeAttribute('required');
+                        input.value = '';
+                    });
+                }
+            }
+
+            document.querySelectorAll('input[name="method"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    toggleCardFields(e.target.value === 'CARD');
+                });
+            });
+
+            // Initialize state
+            toggleCardFields(document.querySelector('input[name="method"]:checked').value === 'CARD');
+
+            // Dynamic formatters
+            const numInput = document.getElementById('cardNumber');
+            if (numInput) {
+                numInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let parts = [];
+                    for (let i = 0; i < val.length; i += 4) {
+                        parts.push(val.substring(i, i + 4));
+                    }
+                    e.target.value = parts.join(' ');
+                });
+            }
+
+            const expInput = document.getElementById('cardExpiry');
+            if (expInput) {
+                expInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\D/g, '');
+                    if (val.length >= 2) {
+                        e.target.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+                    } else {
+                        e.target.value = val;
+                    }
+                });
+            }
+        </script>
+
         <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-top:16px;">
             Your payment is secure and encrypted.
         </p>
