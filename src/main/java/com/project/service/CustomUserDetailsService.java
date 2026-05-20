@@ -1,4 +1,4 @@
-package com.projects.service;
+package com.project.service;
 
 import com.project.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

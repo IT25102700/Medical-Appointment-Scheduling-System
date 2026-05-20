@@ -1,4 +1,4 @@
-package com.projects.repository;
+package com.project.repository;
 
 import com.project.model.Role;
 import com.project.model.User;

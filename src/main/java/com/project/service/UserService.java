@@ -1,4 +1,4 @@
-package com.projects.service;
+package com.project.service;
 
 import com.project.model.Role;
 import com.project.repository.AdminRepository;

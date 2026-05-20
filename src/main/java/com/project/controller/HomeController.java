@@ -1,4 +1,4 @@
-package com.projects.controller;
+package com.project.controller;
 
 import com.project.service.DoctorService;
 import com.project.service.FeedbackService;

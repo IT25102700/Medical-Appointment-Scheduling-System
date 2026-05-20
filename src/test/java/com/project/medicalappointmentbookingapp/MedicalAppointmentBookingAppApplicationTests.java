@@ -1,4 +1,4 @@
-package com.projects.medicalappointmentbookingapp;
+package com.project.medicalappointmentbookingapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
