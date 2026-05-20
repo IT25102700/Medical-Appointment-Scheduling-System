@@ -3,12 +3,12 @@
 <head th:replace="~{fragments/head :: head('Feedback Submitted')} ">
 </head>
 <body class="bg-[var(--bg)] text-[var(--secondary)] font-['Outfit']">
-    <div th:replace="~{fragments/navbar :: navbar} "></div>
-    <div class="container mx-auto px-4 py-12 text-center">
-        <h1 class="text-3xl font-bold text-[var(--primary)] mb-4">Thank You!</h1>
-        <p class="text-lg mb-8">Your feedback has been submitted successfully.</p>
-        <a th:href="@{/patient/dashboard}" class="bg-[var(--primary)] text-white px-6 py-2 rounded shadow hover:bg-blue-700">Back to Dashboard</a>
-    </div>
-    <div th:replace="~{fragments/footer :: footer} "></div>
+<div th:replace="~{fragments/navbar :: navbar} "></div>
+<div class="container mx-auto px-4 py-12 text-center">
+    <h1 class="text-3xl font-bold text-[var(--primary)] mb-4">Thank You!</h1>
+    <p class="text-lg mb-8">Your feedback has been submitted successfully.</p>
+    <a th:href="@{/patient/dashboard}" class="bg-[var(--primary)] text-white px-6 py-2 rounded shadow hover:bg-blue-700">Back to Dashboard</a>
+</div>
+<div th:replace="~{fragments/footer :: footer} "></div>
 </body>
 </html>
