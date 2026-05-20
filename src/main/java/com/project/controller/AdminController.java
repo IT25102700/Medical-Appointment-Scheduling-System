@@ -3,7 +3,11 @@ package com.project.controller;
 import com.project.model.Doctor;
 import com.project.model.Role;
 import com.project.repository.UserRepository;
-import com.project.service.*;
+import com.project.service.AdminService;
+import com.project.service.AppointmentService;
+import com.project.service.DoctorService;
+import com.project.service.PaymentService;
+import com.project.service.UserService;
 import com.project.util.FileStorageManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -54,7 +58,7 @@ public class AdminController {
     @GetMapping("/admin/doctors")
     public String doctorsList(Model model) {
         model.addAttribute("doctors", doctorService.findAllDoctors());
-        return "member2-doctor-dashboard/doctors";
+        return "member3-admin-dashboard/doctors";
     }
 
     @GetMapping("/admin/appointments")
@@ -124,23 +128,113 @@ public class AdminController {
             doctor.setDegree(degree);
             doctor.setAbout(about);
             doctor.setAvailableSlots(availableSlots);
-            
+
             if (profileImageFile != null && !profileImageFile.isEmpty()) {
                 String imagePath = fileStorageManager.saveImage(profileImageFile);
                 doctor.setProfileImage(imagePath);
             }
             doctorService.saveDoctor(doctor);
-            
+
             // Notify all admins
             userService.getUserRepository().findAll().stream()
-                .filter(u -> u.getRole() == com.project.model.Role.ROLE_ADMIN)
-                .forEach(admin -> notificationService.send(admin.getUserId(), "New doctor registered: " + fullName));
-                
+                    .filter(u -> u.getRole() == com.project.model.Role.ROLE_ADMIN)
+                    .forEach(admin -> notificationService.send(admin.getUserId(), "New doctor registered: " + fullName));
+
             redirectAttributes.addFlashAttribute("message", "Doctor added successfully.");
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/admin/doctors/add";
+    }
+
+    @GetMapping("/admin/doctors/edit")
+    public String editDoctorView(@RequestParam String doctorId, Model model) {
+        var doctor = doctorService.findAllDoctors().stream()
+                .filter(d -> d.getDoctorId().equals(doctorId) || d.getUserId().equals(doctorId))
+                .findFirst()
+                .orElse(null);
+        model.addAttribute("doctor", doctor);
+        return "member3-admin-dashboard/edit-doctor";
+    }
+
+    @PostMapping("/admin/doctors/edit")
+    public String editDoctor(@RequestParam String doctorId,
+                             @RequestParam String fullName,
+                             @RequestParam String email,
+                             @RequestParam String phone,
+                             @RequestParam String specialization,
+                             @RequestParam String licenseNumber,
+                             @RequestParam(defaultValue = "0") double appointmentFee,
+                             @RequestParam(defaultValue = "") String experience,
+                             @RequestParam(defaultValue = "") String degree,
+                             @RequestParam(defaultValue = "") String about,
+                             @RequestParam(defaultValue = "") String availableSlots,
+                             @RequestParam(required = false) String password,
+                             @RequestParam(required = false) MultipartFile profileImageFile,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            var doctor = doctorService.findAllDoctors().stream()
+                    .filter(d -> d.getDoctorId().equals(doctorId) || d.getUserId().equals(doctorId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+            // Sync user account details
+            var user = userService.getUserRepository().findByUserId(doctor.getUserId()).orElseThrow();
+            user.setFullName(fullName);
+            user.setEmail(email);
+            user.setPhone(phone);
+            if (password != null && !password.isBlank()) {
+                user.setPasswordHash(userService.getPasswordEncoder().encode(password));
+            }
+            userService.getUserRepository().upsert(user);
+
+            // Update doctor details
+            doctor.setFullName(fullName);
+            doctor.setEmail(email);
+            doctor.setPhone(phone);
+            doctor.setSpecialization(specialization);
+            doctor.setLicenseNumber(licenseNumber);
+            doctor.setAppointmentFee(appointmentFee);
+            doctor.setExperience(experience);
+            doctor.setDegree(degree);
+            doctor.setAbout(about);
+            doctor.setAvailableSlots(availableSlots);
+
+            if (profileImageFile != null && !profileImageFile.isEmpty()) {
+                String imagePath = fileStorageManager.saveImage(profileImageFile);
+                doctor.setProfileImage(imagePath);
+                user.setProfileImage(imagePath);
+                userService.getUserRepository().upsert(user);
+            }
+
+            doctorService.saveDoctor(doctor);
+            redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/doctors";
+    }
+
+    @PostMapping("/admin/doctors/delete")
+    public String deleteDoctor(@RequestParam String doctorId, RedirectAttributes redirectAttributes) {
+        try {
+            var doctor = doctorService.findAllDoctors().stream()
+                    .filter(d -> d.getDoctorId().equals(doctorId) || d.getUserId().equals(doctorId))
+                    .findFirst()
+                    .orElse(null);
+            if (doctor != null) {
+                // Delete user from User Repository
+                userService.getUserRepository().delete(doctor.getUserId());
+                // Delete doctor from Doctor Repository
+                userService.getDoctorRepository().delete(doctor.getDoctorId());
+                redirectAttributes.addFlashAttribute("message", "Doctor deleted successfully.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Doctor not found.");
+            }
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/doctors";
     }
 
     @GetMapping("/admin/profile")
@@ -158,16 +252,16 @@ public class AdminController {
                                 @RequestParam(required = false) MultipartFile profileImageFile) {
         String username = authentication.getName();
         var admin = userService.getUserRepository().findByUsername(username).orElseThrow();
-        
+
         admin.setFullName(fullName);
         admin.setEmail(email);
         admin.setPhone(phone);
-        
+
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
             String imagePath = fileStorageManager.saveImage(profileImageFile);
             admin.setProfileImage(imagePath);
         }
-        
+
         userService.getUserRepository().upsert(admin);
         return "redirect:/admin/profile";
     }
