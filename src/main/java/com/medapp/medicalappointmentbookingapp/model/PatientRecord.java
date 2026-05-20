@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.model;
+package com.project.model;
 
 public class PatientRecord {
     private String recordId;
@@ -8,7 +8,9 @@ public class PatientRecord {
     private String notes;
     private String visitHistory;
 
-    public String getRecordId() { return recordId; }
+    public String getRecordId() {
+        return recordId;
+    }
 
     public void setRecordId(String recordId) {
         this.recordId = recordId;

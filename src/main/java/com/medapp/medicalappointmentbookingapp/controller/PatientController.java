@@ -1,6 +1,5 @@
 package com.medapp.medicalappointmentbookingapp.controller;
 
-import com.project.model.AppointmentStatus;
 import com.project.service.*;
 import com.project.util.FileStorageManager;
 import org.springframework.security.core.Authentication;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
 
 @Controller
 public class PatientController {
@@ -34,9 +31,37 @@ public class PatientController {
     }
 
     @GetMapping("/patient/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(Authentication authentication, Model model) {
+        String username = authentication.getName();
+        var patient = userService.getUserRepository().findByUsername(username).orElseThrow();
+        var appointments = appointmentService.patientAppointments(patient.getUserId());
+        var apptIds = appointments.stream().map(com.project.model.Appointment::getAppointmentId).collect(java.util.stream.Collectors.toList());
+        
+        var payments = paymentService.history().stream()
+                .filter(p -> apptIds.contains(p.getAppointmentId()))
+                .collect(java.util.stream.Collectors.toList());
+        
+        long completedCount = appointments.stream().filter(a -> a.getStatus() == com.project.model.AppointmentStatus.COMPLETED).count();
+        long bookedCount = appointments.stream().filter(a -> a.getStatus() == com.project.model.AppointmentStatus.BOOKED).count();
+        double totalPaid = payments.stream().mapToDouble(com.project.model.Payment::getAmount).sum();
+
+        model.addAttribute("appointments", appointments);
         model.addAttribute("doctors", doctorService.findAllDoctors());
-        model.addAttribute("appointments", appointmentService.all());
+        model.addAttribute("patient", patient);
+        model.addAttribute("bookedCount", bookedCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("totalPaid", totalPaid);
+        return "member4-patient-dashboard/dashboard";
+    }
+
+    @GetMapping("/patient/appointments")
+    public String appointments(Authentication authentication, Model model) {
+        String username = authentication.getName();
+        var patient = userService.getUserRepository().findByUsername(username).orElseThrow();
+        var appointments = appointmentService.patientAppointments(patient.getUserId());
+        
+        model.addAttribute("doctors", doctorService.findAllDoctors());
+        model.addAttribute("appointments", appointments);
         model.addAttribute("payments", paymentService.history());
         model.addAttribute("records", recordService.all());
         return "member4-patient-dashboard/my-appointments";
@@ -62,71 +87,10 @@ public class PatientController {
         return "member2-doctor-dashboard/doctors";
     }
 
-    @GetMapping("/patient/book")
-    public String bookView(@RequestParam String doctorId, Model model) {
-        model.addAttribute("doctor", doctorService.findAllDoctors().stream()
-                .filter(d -> d.getDoctorId().equals(doctorId))
-                .findFirst()
-                .orElse(null));
-        return "member6-appointment-booking/booking";
-    }
-
-    @PostMapping("/patient/book")
-    public String book(Authentication authentication, @RequestParam String doctorId, @RequestParam String date, @RequestParam String time, @RequestParam(defaultValue = "") String notes, Model model) {
-        LocalDateTime ldt = LocalDateTime.now();
-        try {
-            int hour = Integer.parseInt(time.split(":")[0]);
-            int min = Integer.parseInt(time.split(":")[1].split(" ")[0]);
-            if (time.contains("PM") && hour < 12) hour += 12;
-            if (time.contains("AM") && hour == 12) hour = 0;
-            ldt = LocalDateTime.of(java.time.LocalDate.parse(date), java.time.LocalTime.of(hour, min));
-        } catch (Exception e) {}
-
-        var user = userService.getUserRepository().findByUsername(authentication.getName()).orElseThrow();
-        var appointment = appointmentService.book(user.getUserId(), doctorId, ldt, notes);
-        
-        double fee = 500.0;
-        var doc = doctorService.findAllDoctors().stream().filter(d -> d.getDoctorId().equals(doctorId)).findFirst();
-        if (doc.isPresent()) fee = doc.get().getAppointmentFee();
-        
-        model.addAttribute("appointmentId", appointment.getAppointmentId());
-        model.addAttribute("fee", fee);
-        return "member6-appointment-booking/checkout";
-    }
-
     @PostMapping("/patient/pay")
     public String processPayment(@RequestParam String appointmentId, @RequestParam double amount, @RequestParam String method) {
         paymentService.submit(appointmentId, amount, method);
-        return "redirect:/patient/dashboard";
-    }
-
-    @PostMapping("/patient/cancel")
-    public String cancel(@RequestParam String appointmentId) {
-        appointmentService.updateStatus(appointmentId, AppointmentStatus.CANCELLED);
-        paymentService.refundByAppointment(appointmentId);
-        return "redirect:/patient/dashboard";
-    }
-
-    @GetMapping("/patient/reschedule")
-    public String rescheduleView(@RequestParam String appointmentId, Model model) {
-        var appt = appointmentService.findById(appointmentId);
-        model.addAttribute("appointment", appt);
-        model.addAttribute("doctor", doctorService.findAllDoctors().stream().filter(d -> d.getDoctorId().equals(appt.getDoctorId())).findFirst().orElse(null));
-        return "member6-appointment-booking/reschedule";
-    }
-
-    @PostMapping("/patient/reschedule")
-    public String reschedule(@RequestParam String appointmentId, @RequestParam String date, @RequestParam String time) {
-        LocalDateTime ldt = LocalDateTime.now();
-        try {
-            int hour = Integer.parseInt(time.split(":")[0]);
-            int min = Integer.parseInt(time.split(":")[1].split(" ")[0]);
-            if (time.contains("PM") && hour < 12) hour += 12;
-            if (time.contains("AM") && hour == 12) hour = 0;
-            ldt = LocalDateTime.of(java.time.LocalDate.parse(date), java.time.LocalTime.of(hour, min));
-        } catch (Exception e) {}
-        appointmentService.reschedule(appointmentId, ldt);
-        return "redirect:/patient/dashboard";
+        return "redirect:/patient/appointments";
     }
 
     @GetMapping("/patient/payments")
@@ -186,18 +150,5 @@ public class PatientController {
         return "redirect:/patient/profile";
     }
 
-    @GetMapping("/patient/feedback")
-    public String feedbackView(@RequestParam String appointmentId, @RequestParam String doctorId, Model model) {
-        model.addAttribute("appointmentId", appointmentId);
-        model.addAttribute("doctor", doctorService.findAllDoctors().stream().filter(d -> d.getDoctorId().equals(doctorId)).findFirst().orElse(null));
-        return "member5-feedback/feedback-form";
-    }
 
-    @PostMapping("/patient/feedback/submit")
-    public String submitFeedback(Authentication authentication, @RequestParam String doctorId, @RequestParam int rating, @RequestParam String experience, @RequestParam String comment) {
-        String username = authentication.getName();
-        var patient = userService.getUserRepository().findByUsername(username).orElseThrow();
-        feedbackService.submit(patient.getUserId(), doctorId, rating, experience, comment);
-        return "redirect:/patient/dashboard";
-    }
 }
