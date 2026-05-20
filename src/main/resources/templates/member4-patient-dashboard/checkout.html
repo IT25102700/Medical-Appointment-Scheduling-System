@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Checkout – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="auth-wrapper" style="min-height: calc(100vh - 140px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--bg);">
+    <div class="auth-card" style="max-width:500px; width:100%; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 16px; background: white; padding: 32px; border: 1px solid var(--border);">
+        <h2 style="margin-bottom:24px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--text);">Complete Payment</h2>
+        
+        <div style="background:var(--bg); padding:20px; border-radius:12px; margin-bottom:24px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="color:var(--text-secondary); font-size: 0.95rem;">Doctor Appointment Fee</span>
+                <span style="font-weight:700; font-size: 0.95rem; color: var(--text);">Rs. <span th:text="${fee}">500</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="color:var(--text-secondary); font-size: 0.95rem;">Service Fee & Tax</span>
+                <span style="font-weight:700; font-size: 0.95rem; color: var(--text);">Rs. 2.00</span>
+            </div>
+            <hr style="border:0; border-top:1px solid var(--border); margin:16px 0;"/>
+            <div style="display:flex; justify-content:space-between; font-size:1.15rem;">
+                <span style="font-weight:700; color: var(--text);">Total Amount</span>
+                <span style="font-weight:800; color:var(--primary);">Rs. <span th:text="${fee + 2}">502</span></span>
+            </div>
+        </div>
+
+        <form th:action="@{/patient/pay}" method="post">
+            <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>
+            <input type="hidden" name="amount" th:value="${fee}"/>
+            
+            <div class="form-group">
+                <label style="font-weight: 600; margin-bottom: 8px; display: block; color: var(--text);">Select Payment Method</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                    <label style="display:flex; align-items:center; gap:10px; padding:14px; border:1px solid var(--border); border-radius:10px; cursor:pointer; transition: all 0.2s;">
+                        <input type="radio" name="method" value="STRIPE" checked/>
+                        <span style="font-weight: 600; font-size: 0.9rem;">Stripe</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; padding:14px; border:1px solid var(--border); border-radius:10px; cursor:pointer; transition: all 0.2s;">
+                        <input type="radio" name="method" value="CARD"/>
+                        <span style="font-weight: 600; font-size: 0.9rem;">Credit Card</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="card-fields" style="display:none; margin-top:20px; border:1px dashed var(--border); padding:16px; border-radius:10px; background:var(--bg);">
+                <h4 style="margin-bottom:14px; font-size:0.9rem; font-weight:700; color: var(--text);">Card Details</h4>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem;">Cardholder Name</label>
+                    <input type="text" id="cardName" placeholder="John Doe" style="padding: 10px; font-size: 0.9rem;"/>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem;">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 1234 5678" maxlength="19" style="padding: 10px; font-size: 0.9rem;"/>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.8rem;">Expiry Date</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" style="padding: 10px; font-size: 0.9rem;"/>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.8rem;">CVV</label>
+                        <input type="password" id="cardCvv" placeholder="123" maxlength="3" style="padding: 10px; font-size: 0.9rem;"/>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:28px; padding:14px; border-radius: 10px; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">Pay Now & Confirm</button>
+        </form>
+
+        <script>
+            function toggleCardFields(show) {
+                const fields = document.getElementById('card-fields');
+                const inputs = fields.querySelectorAll('input');
+                if (show) {
+                    fields.style.display = 'block';
+                    inputs.forEach(input => input.setAttribute('required', 'true'));
+                } else {
+                    fields.style.display = 'none';
+                    inputs.forEach(input => {
+                        input.removeAttribute('required');
+                        input.value = '';
+                    });
+                }
+            }
+            
+            document.querySelectorAll('input[name="method"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    toggleCardFields(e.target.value === 'CARD');
+                });
+            });
+
+            // Initialize state
+            toggleCardFields(document.querySelector('input[name="method"]:checked').value === 'CARD');
+
+            // Dynamic formatters
+            const numInput = document.getElementById('cardNumber');
+            if (numInput) {
+                numInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let parts = [];
+                    for (let i = 0; i < val.length; i += 4) {
+                        parts.push(val.substring(i, i + 4));
+                    }
+                    e.target.value = parts.join(' ');
+                });
+            }
+
+            const expInput = document.getElementById('cardExpiry');
+            if (expInput) {
+                expInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\D/g, '');
+                    if (val.length >= 2) {
+                        e.target.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+                    } else {
+                        e.target.value = val;
+                    }
+                });
+            }
+        </script>
+        
+        <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-top:20px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            🔒 Your payment is secure and encrypted.
+        </p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
