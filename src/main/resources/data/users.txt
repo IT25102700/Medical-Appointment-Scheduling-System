@@ -1,0 +1,5 @@
+doctor2,$2a$10$JUdQ1yE0sTGNG9yR02.VaOMyV3nBgtnVGSgDL3ndmIAGLJykwAjTy,ROLE_DOCTOR,U-e9a7111b-3eae-4a26-8e77-0acf596423ed,Dr. Sarah Smith,sarah@mediqueue.com,,
+Kevin_medic,$2a$10$SxqUR87I5Qq7qDmMk9ccuOipM.s0F3N9W0i7QxhcoXxpsYTjgXtY.,ROLE_DOCTOR,U-de274255-a477-4072-8c17-c4d1d7b03464,Dr. Kevin Medic,kevin@mediqueue.com,,
+admin,$2a$10$SizJQ4iA/6KApAew.rUfR.97ERrA.GZarfLbZ6XKo0htX4/rYQvFC,ROLE_ADMIN,U-ADMIN,System Admin,admin@mediqueue.com,,
+patient1,$2a$10$n85PNQvnevdb7Hry0Kp9kOxOZ35VlrAydtpbj0tJ9yuLxni9MMgrG,ROLE_PATIENT,U-PT,John Doe,john@example.com,,
+frontdesk,$2a$10$3SwwlOGJFqBh9WblFn7Yhe15KiLp3H/1by1aVz2btSWANFe46dZUS,ROLE_FRONTDESK,U-FD,Front Desk Staff,frontdesk@hospital.local,9000000003,

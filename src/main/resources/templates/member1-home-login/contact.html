@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Contact – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">CONTACT US</h2>
+    </div>
+    <div class="contact-grid">
+        <div class="contact-img" style="font-size: 5rem; display: flex; align-items: center; justify-content: center;">📞</div>
+        <div>
+            <div class="contact-info">
+                <h4>OUR OFFICE</h4>
+                <p>00000 Willms Station</p>
+                <p>Suite 000, Washington, USA</p>
+                <p style="margin-top:8px;">Tel: (415) 555-0132</p>
+                <p>Email: contact@MediQueue.com</p>
+            </div>
+            <div class="contact-careers">
+                <h4 style="font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--secondary);margin-bottom:8px;">CAREERS AT MediQueue</h4>
+                <p>Learn more about our teams and job openings.</p>
+                <a href="#" class="btn btn-outline btn-sm">Explore Jobs</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
