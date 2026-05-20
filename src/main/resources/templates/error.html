@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Error – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="text-align:center;">
+        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
+        <h2>Oops! Something went wrong</h2>
+        <p th:text="${error}" style="color:var(--danger);margin:1rem 0;font-weight:600;">Error message goes here.</p>
+        <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
+        <a th:href="@{/}" class="btn btn-outline" style="margin-left:10px;">Home</a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
