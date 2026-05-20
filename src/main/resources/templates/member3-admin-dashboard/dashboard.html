@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin Dashboard – MediQueue')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: admin-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <h1>Admin Dashboard</h1>
+            <div style="display:flex;gap:12px;">
+                <span class="badge badge-primary">System Online</span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <!-- Top Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info"><p>Total Doctors</p><h3 th:text="${doctors != null ? doctors.size() : 0}">0</h3></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-info"><p>Total Patients</p><h3 th:text="${users != null ? users.size() : 0}">0</h3></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info"><p>Total Revenue</p><h3>Rs. <span th:text="${payments != null ? #aggregates.sum(payments.![amount]) : 0}">0</span></h3></div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:24px;">
+                <!-- Latest Appointments -->
+                <div class="table-card">
+                    <h3>Recent Appointments</h3>
+                    <table>
+                        <thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <tr th:each="appt, iter : ${appointments}" th:if="${iter.index < 5}">
+                            <td>
+                                <span th:each="u : ${users}" th:if="${u.userId == appt.patientId}" th:text="${u.fullName}">Patient Name</span>
+                                <span th:unless="${#lists.toList(users).?[userId == '__${appt.patientId}__'].size() > 0}" th:text="${appt.patientId}">ID</span>
+                            </td>
+                            <td>
+                                <span th:each="d : ${doctors}" th:if="${d.doctorId == appt.doctorId}" th:text="'Dr. ' + ${d.fullName}">Doctor Name</span>
+                                <span th:unless="${#lists.toList(doctors).?[doctorId == '__${appt.doctorId}__'].size() > 0}" th:text="${appt.doctorId}">ID</span>
+                            </td>
+                            <td th:text="${appt.appointmentTime != null ? #temporals.format(appt.appointmentTime, 'dd MMM HH:mm') : 'N/A'}">Date</td>
+                            <td><span th:text="${appt.status}" th:class="'status-badge status-' + ${#strings.toLowerCase(appt.status)}">Status</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div style="padding:12px;text-align:center;"><a th:href="@{/admin/appointments}" style="font-size:0.8rem;color:var(--primary);text-decoration:none;font-weight:600;">View All Appointments</a></div>
+                </div>
+
+                <!-- Recent Feedback -->
+                <div class="table-card">
+                    <h3>Patient Feedback</h3>
+                    <div style="padding:16px;">
+                        <div th:each="fb, iter : ${feedbacks}" th:if="${iter.index < 3}" style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <strong th:each="u : ${users}" th:if="${u.userId == fb.patientId}" th:text="${u.fullName}" style="font-size:0.85rem;">Patient</strong>
+                                <strong th:unless="${#lists.toList(users).?[userId == '__${fb.patientId}__'].size() > 0}" th:text="${fb.patientId}" style="font-size:0.85rem;">Patient ID</strong>
+
+                                <span style="color:#f59e0b;font-size:0.8rem;">★ <span th:text="${fb.rating}">5</span></span>
+                            </div>
+                            <p th:text="${fb.comment}" style="font-size:0.8rem;color:var(--text-secondary);"></p>
+                        </div>
+                        <div th:if="${feedbacks == null or feedbacks.isEmpty()}" style="text-align:center;color:var(--text-secondary);font-size:0.8rem;">No feedback yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card" style="margin-top:24px;">
+                <h3>System Users</h3>
+                <table>
+                    <thead><tr><th>Username</th><th>Role</th><th>Full Name</th><th>Email</th></tr></thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.username}">Username</td>
+                        <td><span th:text="${user.role}" class="status-badge status-pending" style="background:#eee;color:#333;">Role</span></td>
+                        <td th:text="${user.fullName}">Name</td>
+                        <td th:text="${user.email}">Email</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>
