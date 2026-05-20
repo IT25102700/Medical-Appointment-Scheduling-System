@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Help Desk Workspace – Front Desk')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: frontdesk-sidebar}"></div>
+    
+    <div style="flex:1;display:flex;flex-direction:column;background:var(--bg);">
+        <div class="panel-header" style="border-bottom:1px solid var(--border);">
+            <div>
+                <h1 style="font-family:'Outfit',sans-serif;font-weight:700;">Help Desk Workspace</h1>
+                <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">Manage patient inquiries, direct support, and respond to incoming chats.</p>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
+
+        <div style="flex:1;display:flex;overflow:hidden;">
+            <!-- Left Side: Patient List -->
+            <div style="width:320px;border-right:1px solid var(--border);background:white;display:flex;flex-direction:column;overflow-y:auto;">
+                <div style="padding:16px;border-bottom:1px solid var(--border);font-weight:700;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.95rem;">
+                    Registered Patients
+                </div>
+                <div th:each="p : ${patients}" style="border-bottom:1px solid var(--border);">
+                    <a th:href="@{/frontdesk/dashboard(patientId=${p.userId})}" 
+                       style="display:flex;align-items:center;gap:12px;padding:16px;text-decoration:none;transition:all 0.2s;"
+                       th:styleappend="${selectedPatientId == p.userId} ? 'background:var(--primary-light);border-left:4px solid var(--primary);' : 'background:white;'"
+                       class="chat-user-item">
+                        <div style="width:40px;height:40px;border-radius:50%;background:#f3f4f6;color:#4b5563;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;user-select:none;">
+                            👤
+                        </div>
+                        <div style="flex:1;overflow:hidden;">
+                            <h4 style="margin:0;font-size:0.9rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" th:text="${p.fullName}">Patient Name</h4>
+                            <p style="margin:4px 0 0 0;font-size:0.75rem;color:var(--text-secondary);" th:text="${p.email}">Email</p>
+                        </div>
+                    </a>
+                </div>
+                <div th:if="${#lists.isEmpty(patients)}" style="padding:30px;text-align:center;color:var(--text-secondary);font-size:0.9rem;">
+                    No patients registered in the system.
+                </div>
+            </div>
+
+            <!-- Right Side: Chat Pane -->
+            <div style="flex:1;display:flex;flex-direction:column;background:#f8fafc;position:relative;">
+                <div th:if="${selectedPatient == null}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;color:var(--text-secondary);">
+                    <span style="font-size:4rem;margin-bottom:16px;">💁‍♀️</span>
+                    <h3 style="font-family:'Outfit',sans-serif;color:var(--text);font-weight:600;">No Patient Conversation Active</h3>
+                    <p style="max-width:300px;font-size:0.85rem;margin-top:8px;">Select a patient from the workspace list on the left to start direct live support messaging.</p>
+                </div>
+
+                <div th:if="${selectedPatient != null}" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                    <!-- Active Chat Header -->
+                    <div style="background:white;padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(0,0,0,0.03);">
+                        <div style="width:40px;height:40px;border-radius:50%;background:#f3f4f6;color:#4b5563;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;user-select:none;">
+                            👤
+                        </div>
+                        <div>
+                            <h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--text);font-family:'Outfit',sans-serif;" th:text="${selectedPatient.fullName}">Patient Selected</h3>
+                            <p style="margin:2px 0 0 0;font-size:0.75rem;color:var(--text-secondary);font-weight:500;">
+                                <span th:text="${'Blood: ' + selectedPatient.bloodGroup}">Blood</span> | 
+                                <span th:text="${'Allergies: ' + selectedPatient.allergies}">Allergies</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages List -->
+                    <div id="chat-messages" style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;">
+                        <div th:each="msg : ${conversation}" 
+                             style="display:flex;flex-direction:column;max-width:70%;"
+                             th:styleappend="${msg.senderId == frontdeskUser.userId} ? 'align-self:flex-end;align-items:flex-end;' : 'align-self:flex-start;align-items:flex-start;'">
+                            
+                            <div style="padding:12px 16px;border-radius:14px;font-size:0.9rem;line-height:1.4;box-shadow:0 1px 2px rgba(0,0,0,0.05);"
+                                 th:styleappend="${msg.senderId == frontdeskUser.userId} ? 'background:var(--primary);color:white;border-bottom-right-radius:2px;' : 'background:white;color:var(--text);border-bottom-left-radius:2px;border:1px solid var(--border);'"
+                                 th:text="${msg.content}">
+                                Message Content
+                            </div>
+                            <span style="font-size:0.7rem;color:var(--text-secondary);margin-top:4px;" 
+                                  th:text="${#temporals.format(msg.timestamp, 'dd MMM | HH:mm')}">12 May 14:30</span>
+                        </div>
+                        <div th:if="${#lists.isEmpty(conversation)}" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:0.85rem;font-style:italic;">
+                            No messages exchanged yet. Send a greeting to begin live help desk support!
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Field -->
+                    <div style="background:white;padding:16px 24px;border-top:1px solid var(--border);">
+                        <form th:action="@{/frontdesk/messages/send}" method="post" style="display:flex;gap:12px;align-items:center;">
+                            <input type="hidden" name="patientId" th:value="${selectedPatient.userId}"/>
+                            <input type="text" name="content" placeholder="Type support response here..." required autocomplete="off"
+                                   style="flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;outline:none;transition:border-color 0.2s;"
+                                   onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"/>
+                            <button type="submit" class="btn btn-primary" style="padding:12px 24px;font-weight:600;font-size:0.9rem;border-radius:10px;">Reply</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto Scroll Chat to bottom
+    const chatContainer = document.getElementById('chat-messages');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+</script>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>

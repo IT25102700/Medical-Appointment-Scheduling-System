@@ -2,47 +2,58 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head('Payment History – MediQueue')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: patient-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <div>
+                <h1 style="font-family:'Outfit',sans-serif;font-weight:700;">Payment History</h1>
+                <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">Keep track of your transaction history, consultation fees, and refund statuses.</p>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
 
-<div class="panel-container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
-    <div class="table-card" style="padding: 30px;">
-        <h2 style="margin-bottom: 24px;">Payment History</h2>
-        
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
-                    <th style="padding: 12px;">Doctor</th>
-                    <th style="padding: 12px;">Appointment Date</th>
-                    <th style="padding: 12px;">Amount</th>
-                    <th style="padding: 12px;">Method</th>
-                    <th style="padding: 12px;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="pay : ${payments}" style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 12px;">
-                        <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}">
-                            <span th:each="doc : ${doctors}" th:if="${doc.doctorId == appt.doctorId}" th:text="'Dr. ' + ${doc.fullName}">Doctor</span>
-                        </span>
-                    </td>
-                    <td style="padding: 12px;">
-                        <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}" 
-                              th:text="${#temporals.format(appt.appointmentTime, 'dd MMM yyyy')}">Date</span>
-                    </td>
-                    <td style="padding: 12px; font-weight: 600;">Rs. <span th:text="${pay.amount}">0</span></td>
-                    <td style="padding: 12px;" th:text="${pay.method}">Card</td>
-                    <td style="padding: 12px;">
-                        <span th:text="${pay.state}" class="status-badge status-completed" style="background:#f0fdf4; color:#16a34a;">PAID</span>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(payments)}">
-                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-secondary);">No payment history found.</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="panel-body" style="animation:fadeIn 0.3s ease-out;">
+            <div class="table-card">
+                <h3>Transactions Log</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Appointment Date</th>
+                            <th>Amount Paid</th>
+                            <th>Payment Method</th>
+                            <th>Transaction Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pay : ${payments}">
+                            <td style="font-weight:600;">
+                                <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}">
+                                    <span th:each="doc : ${doctors}" th:if="${doc.doctorId == appt.doctorId}" th:text="'Dr. ' + ${doc.fullName}">Doctor</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:each="appt : ${appointments}" th:if="${appt.appointmentId == pay.appointmentId}" 
+                                      th:text="${#temporals.format(appt.appointmentTime, 'dd MMM yyyy | HH:mm')}">Date</span>
+                            </td>
+                            <td style="font-weight:700; color:var(--primary);">Rs. <span th:text="${pay.amount}">0</span></td>
+                            <td th:text="${pay.method}" style="font-weight:600;">Card</td>
+                            <td>
+                                <span th:text="${pay.state}" class="status-badge status-completed" style="margin:0;">PAID</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(payments)}">
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-secondary);">No payment history found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/panel.js}"></script>
 </body>
 </html>

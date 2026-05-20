@@ -8,9 +8,7 @@ public class PatientRecord {
     private String notes;
     private String visitHistory;
 
-    public String getRecordId() {
-        return recordId;
-    }
+    public String getRecordId() { return recordId; }
 
     public void setRecordId(String recordId) {
         this.recordId = recordId;
