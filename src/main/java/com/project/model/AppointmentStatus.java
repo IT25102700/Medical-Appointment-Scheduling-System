@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.model;
+package com.project.model;
 
 public enum AppointmentStatus {
     BOOKED,

@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.repository;
+package com.project.repository;
 
 import com.project.model.Appointment;
 import com.project.model.AppointmentStatus;

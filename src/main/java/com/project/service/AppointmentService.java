@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.service;
+package com.project.service;
 
 import com.project.model.Appointment;
 import com.project.model.AppointmentStatus;
@@ -36,10 +36,10 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.BOOKED);
         appointment.setNotes(notes);
         repository.append(appointment);
-        
+
         notificationService.send(doctorId, "New appointment request from patient: " + patientId);
-        notificationService.send(patientId, "Appointment booked successfully for " + time.toString());
-        
+        notificationService.send(patientId, "Appointment booked successfully for " + time.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' hh:mm a")));
+
         return appointment;
     }
 
@@ -47,10 +47,11 @@ public class AppointmentService {
         Appointment appointment = findById(appointmentId);
         appointment.setStatus(status);
         repository.upsert(appointment);
-        
+
         notificationService.send(appointment.getPatientId(), "Your appointment status has been updated to: " + status);
         if (status == AppointmentStatus.CANCELLED) {
             notificationService.send(appointment.getDoctorId(), "Appointment " + appointmentId + " has been cancelled.");
+            notificationService.send("U-ADMIN", "Appointment " + appointmentId + " has been cancelled.");
         }
     }
 
@@ -71,9 +72,10 @@ public class AppointmentService {
         LocalDateTime oldTime = appointment.getAppointmentTime();
         appointment.setAppointmentTime(newTime);
         repository.upsert(appointment);
-        
-        notificationService.send(appointment.getDoctorId(), "Appointment " + appointmentId + " has been rescheduled from " + oldTime + " to " + newTime);
-        notificationService.send(appointment.getPatientId(), "Your appointment has been rescheduled to " + newTime);
+
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy 'at' hh:mm a");
+        notificationService.send(appointment.getDoctorId(), "Appointment " + appointmentId + " has been rescheduled from " + oldTime.format(formatter) + " to " + newTime.format(formatter));
+        notificationService.send(appointment.getPatientId(), "Your appointment has been rescheduled to " + newTime.format(formatter));
     }
 
     public List<Appointment> all() {
