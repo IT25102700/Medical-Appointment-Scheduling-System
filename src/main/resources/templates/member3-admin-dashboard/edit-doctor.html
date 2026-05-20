@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Edit Doctor – Admin')}"></head>
+<body>
+<div style="display:flex;min-height:100vh;">
+    <div th:replace="~{fragments/sidebar :: admin-sidebar}"></div>
+    <div style="flex:1;background:var(--bg);">
+        <div class="panel-header">
+            <h1>Edit Doctor Profile</h1>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
+        <div class="panel-body">
+            <div class="form-section">
+                <h2>Modify Doctor Details</h2>
+                <div th:if="${message}" class="alert alert-success" style="color: var(--success); margin-bottom: 1rem;" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" style="color: var(--danger); margin-bottom: 1rem;" th:text="${error}"></div>
+                
+                <form th:action="@{/admin/doctors/edit}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="doctorId" th:value="${doctor.doctorId}"/>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Username (Cannot be changed)</label>
+                            <input type="text" th:value="${doctor.username}" readonly style="background:#f3f4f6; color:#9ca3af;"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Password (Leave blank to keep current)</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="doc-pass" name="password" placeholder="New Password (optional)"/>
+                                <span class="toggle-password" id="toggle-doc-pass" onclick="togglePassword('doc-pass', 'toggle-doc-pass')">🔒</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="fullName" th:value="${doctor.fullName}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" th:value="${doctor.email}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" name="phone" th:value="${doctor.phone}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Speciality</label>
+                            <select name="specialization" required>
+                                <option value="General physician" th:selected="${doctor.specialization == 'General physician'}">General physician</option>
+                                <option value="Gynecologist" th:selected="${doctor.specialization == 'Gynecologist'}">Gynecologist</option>
+                                <option value="Dermatologist" th:selected="${doctor.specialization == 'Dermatologist'}">Dermatologist</option>
+                                <option value="Pediatrician" th:selected="${doctor.specialization == 'Pediatrician'}">Pediatrician</option>
+                                <option value="Neurologist" th:selected="${doctor.specialization == 'Neurologist'}">Neurologist</option>
+                                <option value="Gastroenterologist" th:selected="${doctor.specialization == 'Gastroenterologist'}">Gastroenterologist</option>
+                                <option value="Cardiologist" th:selected="${doctor.specialization == 'Cardiologist'}">Cardiologist</option>
+                                <option value="Ophthalmologist" th:selected="${doctor.specialization == 'Ophthalmologist'}">Ophthalmologist</option>
+                                <option value="Orthopedic" th:selected="${doctor.specialization == 'Orthopedic'}">Orthopedic</option>
+                                <option value="Psychiatrist" th:selected="${doctor.specialization == 'Psychiatrist'}">Psychiatrist</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" name="degree" th:value="${doctor.degree}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Experience</label>
+                            <select name="experience" required>
+                                <option value="1 Year" th:selected="${doctor.experience == '1 Year'}">1 Year</option>
+                                <option value="2 Years" th:selected="${doctor.experience == '2 Years'}">2 Years</option>
+                                <option value="3 Years" th:selected="${doctor.experience == '3 Years'}">3 Years</option>
+                                <option value="4 Years" th:selected="${doctor.experience == '4 Years'}">4 Years</option>
+                                <option value="5+ Years" th:selected="${doctor.experience == '5+ Years'}">5+ Years</option>
+                                <option value="10+ Years" th:selected="${doctor.experience == '10+ Years'}">10+ Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Fee (Rs.)</label>
+                            <input type="number" name="appointmentFee" th:value="${doctor.appointmentFee}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>License Number</label>
+                            <input type="text" name="licenseNumber" th:value="${doctor.licenseNumber}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Image (Leave blank to keep current)</label>
+                            <input type="file" name="profileImageFile" accept="image/*"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:16px;">
+                        <label>About Doctor</label>
+                        <textarea name="about" th:text="${doctor.about}" placeholder="Write a short description..." style="min-height:100px;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-top:16px;">
+                        <label>Available Time Slots (e.g., 09:00 AM, 10:00 AM)</label>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;">
+                            <select id="slot-presets" class="form-control" style="width:auto;display:inline-block;">
+                                <option value="">Select a time...</option>
+                                <option value="08:00 AM">08:00 AM</option>
+                                <option value="09:00 AM">09:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="02:00 PM">02:00 PM</option>
+                                <option value="03:00 PM">03:00 PM</option>
+                                <option value="04:00 PM">04:00 PM</option>
+                                <option value="05:00 PM">05:00 PM</option>
+                                <option value="06:00 PM">06:00 PM</option>
+                            </select>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addSlot()">Add Slot</button>
+                        </div>
+                        <input type="text" id="availableSlots" name="availableSlots" th:value="${doctor.availableSlots}" placeholder="Selected slots will appear here" readonly style="background:#f3f4f6;"/>
+                        <button type="button" class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="document.getElementById('availableSlots').value=''">Clear Slots</button>
+                    </div>
+
+                    <div style="display:flex; gap:12px; margin-top:24px;">
+                        <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;">Save Changes</button>
+                        <a th:href="@{/admin/doctors}" class="btn btn-outline" style="flex:1; justify-content:center; text-align:center;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addSlot() {
+        const select = document.getElementById('slot-presets');
+        const input = document.getElementById('availableSlots');
+        const val = select.value;
+        if (!val) return;
+        
+        let current = input.value ? input.value.split(',') : [];
+        if (!current.includes(val)) {
+            current.push(val);
+            current.sort();
+            input.value = current.join(',');
+        }
+    }
+</script>
+<script th:src="@{/js/panel.js}"></script>
+</body>
+</html>

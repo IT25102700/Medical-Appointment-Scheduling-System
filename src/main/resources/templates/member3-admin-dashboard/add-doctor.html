@@ -16,7 +16,7 @@
                 <h2>Add New Doctor</h2>
                 <div th:if="${message}" class="alert alert-success" style="color: var(--success); margin-bottom: 1rem;" th:text="${message}"></div>
                 <div th:if="${error}" class="alert alert-danger" style="color: var(--danger); margin-bottom: 1rem;" th:text="${error}"></div>
-                
+
                 <form th:action="@{/admin/doctors/add}" method="post" enctype="multipart/form-data">
                     <div class="form-grid">
                         <div class="form-group"><label>Username</label><input type="text" name="username" placeholder="Username" required/></div>

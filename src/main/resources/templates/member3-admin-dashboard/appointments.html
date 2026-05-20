@@ -16,29 +16,29 @@
                 <h3>Appointment List</h3>
                 <table>
                     <thead>
-                        <tr><th>#</th><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Status</th><th>Actions</th></tr>
+                    <tr><th>#</th><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
-                        <tr th:each="appt, iter : ${appointments}">
-                            <td th:text="${iter.count}">1</td>
-                            <td>
-                                <span th:each="u : ${users}" th:if="${u.userId == appt.patientId}" th:text="${u.fullName}">Patient Name</span>
-                                <span th:unless="${#lists.toList(users).?[userId == '__${appt.patientId}__'].size() > 0}" th:text="${appt.patientId}">ID</span>
-                            </td>
-                            <td>
-                                <span th:each="d : ${doctors}" th:if="${d.doctorId == appt.doctorId}" th:text="'Dr. ' + ${d.fullName}">Doctor Name</span>
-                                <span th:unless="${#lists.toList(doctors).?[doctorId == '__${appt.doctorId}__'].size() > 0}" th:text="${appt.doctorId}">ID</span>
-                            </td>
+                    <tr th:each="appt, iter : ${appointments}">
+                        <td th:text="${iter.count}">1</td>
+                        <td>
+                            <span th:each="u : ${users}" th:if="${u.userId == appt.patientId}" th:text="${u.fullName}">Patient Name</span>
+                            <span th:unless="${#lists.toList(users).?[userId == '__${appt.patientId}__'].size() > 0}" th:text="${appt.patientId}">ID</span>
+                        </td>
+                        <td>
+                            <span th:each="d : ${doctors}" th:if="${d.doctorId == appt.doctorId}" th:text="'Dr. ' + ${d.fullName}">Doctor Name</span>
+                            <span th:unless="${#lists.toList(doctors).?[doctorId == '__${appt.doctorId}__'].size() > 0}" th:text="${appt.doctorId}">ID</span>
+                        </td>
 
-                            <td th:text="${appt.appointmentTime != null ? #temporals.format(appt.appointmentTime, 'dd MMM yyyy HH:mm') : 'N/A'}">Date</td>
-                            <td><span th:text="${appt.status}" th:class="'status-badge status-' + ${#strings.toLowerCase(appt.status)}">Status</span></td>
-                            <td>
-                                <form th:if="${appt.status.name() == 'BOOKED'}" th:action="@{/admin/appointments/cancel}" method="post" style="display:inline;">
-                                    <input type="hidden" name="appointmentId" th:value="${appt.appointmentId}"/>
-                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                </form>
-                            </td>
-                        </tr>
+                        <td th:text="${appt.appointmentTime != null ? #temporals.format(appt.appointmentTime, 'dd MMM yyyy HH:mm') : 'N/A'}">Date</td>
+                        <td><span th:text="${appt.status}" th:class="'status-badge status-' + ${#strings.toLowerCase(appt.status)}">Status</span></td>
+                        <td>
+                            <form th:if="${appt.status.name() == 'BOOKED'}" th:action="@{/admin/appointments/cancel}" method="post" style="display:inline;">
+                                <input type="hidden" name="appointmentId" th:value="${appt.appointmentId}"/>
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
