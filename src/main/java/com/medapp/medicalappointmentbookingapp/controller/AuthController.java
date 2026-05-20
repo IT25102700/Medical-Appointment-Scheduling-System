@@ -3,6 +3,7 @@ package com.medapp.medicalappointmentbookingapp.controller;
 import com.project.model.Role;
 import com.project.service.UserService;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,8 @@ public class AuthController {
                            @RequestParam String role,
                            Model model) {
         try {
-            userService.register(username, password, Role.valueOf(role), fullName, email);
+            // Publicly only ROLE_PATIENT registration is permitted
+            userService.register(username, password, Role.ROLE_PATIENT, fullName, email);
             model.addAttribute("message", "Registered successfully. Please log in.");
             return "member1-home-login/login";
         } catch (Exception ex) {
@@ -52,4 +54,49 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/change-password")
+    public String changePasswordView(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        return "member1-home-login/change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(Authentication authentication,
+                                 jakarta.servlet.http.HttpServletRequest request,
+                                 @RequestParam String currentPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes,
+                                 Model model) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String username = authentication.getName();
+        try {
+            var user = userService.getUserRepository().findByUsername(username).orElseThrow();
+            if (!userService.getPasswordEncoder().matches(currentPassword, user.getPasswordHash())) {
+                model.addAttribute("error", "Current password does not match.");
+                return "member1-home-login/change-password";
+            }
+            if (!newPassword.equals(confirmPassword)) {
+                model.addAttribute("error", "New passwords do not match.");
+                return "member1-home-login/change-password";
+            }
+            if (newPassword.isBlank()) {
+                model.addAttribute("error", "Password cannot be empty.");
+                return "member1-home-login/change-password";
+            }
+            userService.resetPassword(user.getUserId(), newPassword);
+            try {
+                request.logout();
+            } catch (Exception e) {}
+            redirectAttributes.addFlashAttribute("message", "Password changed successfully. Please log in with your new password.");
+            return "redirect:/login";
+        } catch (Exception ex) {
+            model.addAttribute("error", ex.getMessage());
+        }
+        return "member1-home-login/change-password";
+    }
 }

@@ -44,6 +44,10 @@ public class UserService {
         userRepository.upsert(user);
     }
 
+    public PasswordEncoder getPasswordEncoder() {
+        return passwordEncoder;
+    }
+
     public UserRepository getUserRepository() {
         return userRepository;
     }

@@ -56,6 +56,12 @@ public class UserRepository extends BaseFileRepository<UserRepository.SimpleUser
         saveAll(users);
     }
 
+    public void delete(String userId) {
+        List<SimpleUser> users = findAll();
+        users.removeIf(u -> u.getUserId().equals(userId));
+        saveAll(users);
+    }
+
     public static class SimpleUser extends User {
         public SimpleUser() {}
         public SimpleUser(String userId, String username, String passwordHash, Role role) {

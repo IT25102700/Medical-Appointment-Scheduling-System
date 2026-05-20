@@ -1,10 +1,10 @@
-package com.medapp.medicalappointmentbookingapp.model;
+package com.project.model;
 
 public abstract class User {
     private String userId;
     private String username;
     private String passwordHash;
-    private Role role;
+    private com.project.model.Role role;
     private String fullName;
     private String email;
     private String phone;
@@ -13,7 +13,7 @@ public abstract class User {
     protected User() {
     }
 
-    protected User(String userId, String username, String passwordHash, Role role, String fullName, String email, String phone) {
+    protected User(String userId, String username, String passwordHash, com.project.model.Role role, String fullName, String email, String phone) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -56,11 +56,11 @@ public abstract class User {
         this.passwordHash = passwordHash;
     }
 
-    public Role getRole() {
+    public com.project.model.Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(com.project.model.Role role) {
         this.role = role;
     }
 
