@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Submit Feedback – MediQueue')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="panel-container" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <div class="table-card" style="padding: 30px;">
+        <h2 style="margin-bottom: 20px;">Doctor Feedback</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">
+            How was your appointment with
+            <strong th:text="${doctor != null ? 'Dr. ' + doctor.fullName : 'your doctor'}">Doctor Name</strong>?
+        </p>
+
+        <form th:action="@{/patient/feedback/submit}" method="post">
+            <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>
+            <input type="hidden" name="doctorId" th:value="${doctor != null ? doctor.doctorId : ''}"/>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Doctor Rating</label>
+                <div class="rating-stars" style="display: flex; gap: 10px; font-size: 1.5rem; color: #cbd5e1; cursor: pointer;">
+                    <input type="number" name="rating" id="rating-input" value="5" hidden/>
+                    <span class="star" onclick="setRating(1)">★</span>
+                    <span class="star" onclick="setRating(2)">★</span>
+                    <span class="star" onclick="setRating(3)">★</span>
+                    <span class="star" onclick="setRating(4)">★</span>
+                    <span class="star" onclick="setRating(5)" style="color: #f59e0b;">★</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Appointment Experience</label>
+                <select name="experience" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);" required>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Average">Average</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Comment</label>
+                <textarea name="comment" rows="4" placeholder="Tell us more about your experience..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 30px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">Submit Feedback</button>
+                <a th:href="@{/patient/appointments}" class="btn" style="background: #eee; color: #333; text-decoration: none; padding: 10px 20px; border-radius: 50px;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function setRating(val) {
+        document.getElementById('rating-input').value = val;
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((s, idx) => {
+            if (idx < val) {
+                s.style.color = '#f59e0b';
+            } else {
+                s.style.color = '#cbd5e1';
+            }
+        });
+    }
+</script>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
