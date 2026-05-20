@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.util;
+package com.project.util;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.controller;
+package com.project.controller;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.config;
+package com.project.config;
 
 import com.project.model.Doctor;
 import com.project.model.Patient;
@@ -38,6 +38,14 @@ public class DataSeeder implements CommandLineRunner {
         if (userService.getPatientRepository().findAll().isEmpty()) {
             Patient patient = new Patient("U-PT", "patient1", "", "Alice Smith", "alice@mail.local", "9000000002", "O+", "None");
             userService.getPatientRepository().upsert(patient);
+        }
+
+        if (userService.getUserRepository().findByUsername("frontdesk").isEmpty()) {
+            UserRepository.SimpleUser fd = new UserRepository.SimpleUser("U-FD", "frontdesk", passwordEncoder.encode("frontdesk123"), Role.ROLE_FRONTDESK);
+            fd.setFullName("Front Desk Staff");
+            fd.setEmail("frontdesk@hospital.local");
+            fd.setPhone("9000000003");
+            userService.getUserRepository().upsert(fd);
         }
     }
 }

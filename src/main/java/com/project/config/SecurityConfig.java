@@ -1,4 +1,4 @@
-package com.medapp.medicalappointmentbookingapp.config;
+package com.project.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")
                         .requestMatchers("/patient/**").hasRole("PATIENT")
+                        .requestMatchers("/frontdesk/**").hasRole("FRONTDESK")
                         .anyRequest().authenticated())
 
                 .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/dashboard", true).permitAll())

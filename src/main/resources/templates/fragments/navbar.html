@@ -29,6 +29,7 @@
                 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" 
                       style="position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; padding: 2px 5px; font-size: 0.6rem; font-weight: bold;">0</span>
             </a>
+            <a th:href="@{/change-password}" class="btn btn-outline btn-sm">Change Password</a>
             <a th:href="@{/dashboard}" class="btn btn-outline btn-sm">My Dashboard</a>
             <form th:action="@{/logout}" method="post" style="display:inline;">
                 <button type="submit" class="btn btn-danger btn-sm">Logout</button>
